@@ -173,12 +173,13 @@ export class UserService {
       );
     }
 
-    await this.prisma.user.update({
+    return this.prisma.user.update({
       where: { id },
-      data: { tokenVersion: { increment: 1 } },
+      data: {
+        ...data,
+        tokenVersion: { increment: 1 },
+      },
     });
-
-    return this.prisma.user.update({ data, where: { id } });
   }
 
   async deleteUser(id: string) {
