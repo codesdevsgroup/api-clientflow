@@ -1,9 +1,14 @@
 import * as multer from 'multer';
 import * as path from 'path';
 import * as fs from 'fs';
-import { extname } from 'path';
 
 const allowedMimeTypes = ['image/webp', 'image/png', 'image/jpeg'];
+
+const mimeToExtension: Record<string, string> = {
+  'image/webp': '.webp',
+  'image/png': '.png',
+  'image/jpeg': '.jpg',
+};
 
 export const multerConfig = {
   storage: multer.diskStorage({
@@ -27,10 +32,8 @@ export const multerConfig = {
     },
     filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      cb(
-        null,
-        `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`,
-      );
+      const extension = mimeToExtension[file.mimetype] || '.bin';
+      cb(null, `${file.fieldname}-${uniqueSuffix}${extension}`);
     },
   }),
   fileFilter: (req, file, cb) => {
