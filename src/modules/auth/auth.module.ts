@@ -1,32 +1,31 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserModule } from '../user/user.module';
 import { LocalStrategy } from './strategies/local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { LoginValidationMiddleware } from './middlewares/login-validation.middleware';
 import { PrismaModule } from '../../services/prisma/prisma.module';
-import { EmailModule } from '../../services/email/email.module';
-import { ConfigModule } from '@nestjs/config';
-import { JwtConfigModule } from '../../services/jwt/jwt-config.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
-import { TokenUtils } from './utils/token.utils';
 
 @Module({
   imports: [
     UserModule,
     PassportModule,
-    JwtConfigModule,
     PrismaModule,
-    EmailModule,
     ConfigModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET') || 'secret',
+        signOptions: { expiresIn: '1d' },
+      }),
+    }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, TokenUtils],
-  exports: [AuthService, TokenUtils],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
+  exports: [AuthService],
 })
-export class AuthModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoginValidationMiddleware).forRoutes('login');
-  }
-}
+export class AuthModule {}
