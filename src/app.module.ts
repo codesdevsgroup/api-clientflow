@@ -4,7 +4,6 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
-import { BullModule } from '@nestjs/bullmq';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
@@ -18,9 +17,6 @@ import { join } from 'path';
         host: 'localhost',
         port: 6379,
       },
-    }),
-    BullModule.registerQueue({
-      name: 'email',
     }),
     ConfigModule,
     ServeStaticModule.forRoot({
