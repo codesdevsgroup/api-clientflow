@@ -11,9 +11,10 @@ model User {
   id        String   @id @default(uuid())
   username  String   @unique
   email     String   @unique
-  password  String
-  role      Role     @default(RESELLER)
-  createdAt DateTime @default(now())
+  password     String
+  role         Role     @default(RESELLER)
+  tokenVersion Int      @default(0)
+  createdAt    DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   posts     Post[]
