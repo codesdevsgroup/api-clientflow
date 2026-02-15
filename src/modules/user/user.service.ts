@@ -82,27 +82,35 @@ export class UserService {
       data.password = await bcrypt.hash(data.password, 10);
     }
 
-    return this.prisma.user.update({
+    const updatedUser = await this.prisma.user.update({
       where: { id },
       data: {
         ...data,
         tokenVersion: { increment: 1 },
       },
     });
-  }
-
-  async deleteUser(id: string) {
-    const deletedAt = new Date();
-    return this.prisma.user.update({
-      where: { id },
-      data,
-    });
 
     const { password: _, ...result } = updatedUser;
     return result;
   }
 
+  async deleteUser(id: string) {
+    try {
+      const deletedUser = await this.prisma.user.delete({
+        where: { id },
+      });
+
+      const { password: _, ...result } = deletedUser;
+      return result;
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('User not found');
+      }
+      throw error;
+    }
+  }
+
   async remove(id: string) {
-    return this.prisma.user.delete({ where: { id } });
+    return this.deleteUser(id);
   }
 }
