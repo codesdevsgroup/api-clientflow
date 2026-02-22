@@ -13,12 +13,12 @@ import { IsPublic } from '../../decorators/is-public.decorator';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
-@IsPublic()
 @ApiTags('Auth')
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @IsPublic()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
