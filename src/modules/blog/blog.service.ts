@@ -31,7 +31,18 @@ export class BlogService {
     const where = publishedOnly ? { published: true } : {};
     return this.prisma.post.findMany({
       where,
-      include: { author: { select: { username: true } } },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        published: true,
+        createdAt: true,
+        author: {
+          select: {
+            username: true,
+          },
+        },
+      },
       orderBy: { createdAt: 'desc' },
     });
   }
